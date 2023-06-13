@@ -28,7 +28,7 @@ export default function Home() {
   const [user] = useAuthState(auth as any);
   return (
     <div className="w-[40rem] mx-auto">
-      <div className="p-3 flex flex-row justify-between rounded-xl shadow">
+      <div className="p-3 flex flex-row justify-between rounded-xl shadow mb-3">
         <h1>Welcome to the Chatroom!</h1>
         <SignOut />
         {!user && <SignIn />}
@@ -75,6 +75,7 @@ function Chatroom() {
     }
     const { uid, photoURL } = auth.currentUser || {};
 
+
     messagesRef.add({
       text: formValue,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -111,8 +112,8 @@ function ChatMessage({ message }: { message: Message }) {
 
   return (
     <div className={`p-3 mb-3 border flex flex-row${isCurrentUser ? '-reverse' : ''} shadow rounded-xl`}>
-      <img className={`${isCurrentUser ? 'ml' : 'mr'}-3 rounded-full shadow-xl h-fit`} src={photoURL} alt={isCurrentUser ? 'my-user-profile' : 'user-profile'} width={30} height={30} />
-      <p>{text}</p>
+      <img className="rounded-full shadow-xl h-fit" src={photoURL} alt={isCurrentUser ? 'my-user-profile' : 'user-profile'} width={30} height={30} />
+      <p className="mx-3">{text}</p>
     </div>
   );
 
