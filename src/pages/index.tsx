@@ -1,14 +1,12 @@
-import { v4 } from "uuid";
-import { useState, useRef, useEffect } from 'react';
-
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
-import React from 'react';
 
+import { useState, useRef, useEffect } from 'react'
+import { v4 } from "uuid";
 
 firebase.initializeApp({
   apiKey: "AIzaSyChLYmtSUbgD0aQs6LV2Wfl5zLxoI_vOSY",
@@ -20,49 +18,51 @@ firebase.initializeApp({
   measurementId: "G-B7RCNTZE2K"
 });
 
+// auth and firestore sdk as global variables for reference
 const auth = firebase.auth();
 const firestore = firebase.firestore();
 
 export default function Home() {
-  const [user] = useAuthState(auth as any);
+  const [user, loading, error] = useAuthState(auth as any);
   return (
-    <div className="w-[40rem] mx-auto">
-      <div className="p-3 flex flex-row justify-between rounded-xl shadow mb-3">
-        <h1>Welcome to the Chatroom!</h1>
-        <SignOut />
-        {!user && <SignIn />}
+    <div className="w-[30rem] sm:w-[35rem] md:w-[40rem] mx-auto px-4 py-1">
+      <div>
+        <div className="p-3 flex flex-row justify-between rounded-xl shadow mb-3">
+          <h1>Welcome to the Chatroom!</h1>
+          {user && <SignOut />}
+          {!user && <SignIn />}
+        </div>
+        {loading && <div>Loading...</div>}
+        {error && <div>Error: {error.message}</div>}
+        {user && <Chatroom />}
       </div>
-      {user && <Chatroom />}
+
     </div>
-  )
+  );
 }
 
 function SignIn() {
   const signInWithGoogle = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider);
+    auth.signInWithRedirect(provider);
   }
-  return (
-    <button onClick={signInWithGoogle}>Sign in with Google</button>
-  )
+  return <button onClick={signInWithGoogle}>Sign in with Google</button>
 }
 
 function SignOut() {
-  return auth.currentUser && (
-    <button onClick={() => auth.signOut()}>Sign Out</button>
-  )
+  return <button onClick={() => auth.signOut()}>Sign Out</button>
 }
 
 function Chatroom() {
   const messagesRef = firestore.collection('messages');
   const query = messagesRef.orderBy('createdAt', 'desc').limit(30);
   const [messages] = useCollectionData<Message>(query as any);
-  const dummy = useRef<HTMLDivElement>(null);
-  // use this query and listen to any updates the date in real time with the use collection data hook it returns an array of objects where each object is the chat message and the database. everytime the chat changes, react will rerender the messages
+    // use this query and listen to any updates the date in real time with the use collection data hook it returns an array of objects where each object is the chat message and the database. everytime the chat changes, react will rerender the messages
 
   const [formValue, setFormValue] = useState('');
+  const dummy = useRef<HTMLDivElement>(null);
 
-  useEffect(()=>{
+  useEffect(() => {
     dummy.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
@@ -85,13 +85,13 @@ function Chatroom() {
     setFormValue('')
   }
   return (
-    <div id="chatroom">
-      <div className="overflow-auto h-[41rem]">
+    <div id="chatroom" >
+      <div className="overflow-auto h-[84vh]">
         {messages && messages.map(msg => <ChatMessage key={msg.id} message={msg} />).reverse()}
         <div ref={dummy} className=""></div>
       </div>
-      <form onSubmit={sendMessage} className='border-[1px] mb-3 w-[40rem] fixed bottom-0'>
-        <input className='px-2 min-h-[3rem] w-[100%] rounded ' value={formValue} onChange={(e) => setFormValue(e.target.value)} />
+      <form onSubmit={sendMessage} className='border-[1px] mb-3'>
+        <input className='px-2 min-h-[3rem] w-[100%] rounded' value={formValue} onChange={(e) => setFormValue(e.target.value)} />
       </form>
     </div>
   )
@@ -102,13 +102,14 @@ interface Message {
   uid: string;
   id: string;
   photoURL: string;
+  createdAt: firebase.firestore.FieldValue
 }
 
 function ChatMessage({ message }: { message: Message }) {
   const { text, uid, photoURL } = message;
 
   const isCurrentUser = uid === auth.currentUser?.uid;
-
+  
   return (
     <div className={`p-3 mb-3 break-words border flex ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'} shadow rounded-xl`}>
       <img className="rounded-full shadow-xl h-fit" src={photoURL} alt={isCurrentUser ? 'my-user-profile' : 'user-profile'} width={30} height={30} />
@@ -117,3 +118,4 @@ function ChatMessage({ message }: { message: Message }) {
   );
 
 }
+
