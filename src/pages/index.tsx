@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { v4 } from "uuid";
 import { useState, useRef, useEffect } from 'react';
 
@@ -92,7 +91,7 @@ function Chatroom() {
         <div ref={dummy} className=""></div>
       </div>
       <form onSubmit={sendMessage} className='border-[1px] mb-3 w-[40rem] fixed bottom-0'>
-        <input className='px-2 h-[3rem] w-[100%] rounded ' value={formValue} onChange={(e) => setFormValue(e.target.value)} />
+        <input className='px-2 min-h-[3rem] w-[100%] rounded ' value={formValue} onChange={(e) => setFormValue(e.target.value)} />
       </form>
     </div>
   )
@@ -111,9 +110,9 @@ function ChatMessage({ message }: { message: Message }) {
   const isCurrentUser = uid === auth.currentUser?.uid;
 
   return (
-    <div className={`p-3 mb-3 border flex flex-row${isCurrentUser ? '-reverse' : ''} shadow rounded-xl`}>
+    <div className={`p-3 mb-3 break-words border flex ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'} shadow rounded-xl`}>
       <img className="rounded-full shadow-xl h-fit" src={photoURL} alt={isCurrentUser ? 'my-user-profile' : 'user-profile'} width={30} height={30} />
-      <p className="mx-3">{text}</p>
+      <p className={`${isCurrentUser ? 'mr-3' : 'ml-3'}`}>{text}</p>
     </div>
   );
 
