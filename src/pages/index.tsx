@@ -24,6 +24,8 @@ const firestore = firebase.firestore();
 
 export default function Home() {
   const [user, loading, error] = useAuthState(auth as any);
+  console.log(process.env.OPENAI_API_KEY)
+  console.log("hello")
   return (
     <div className="w-[30rem] sm:w-[35rem] md:w-[40rem] mx-auto px-4 py-1">
       <div>
