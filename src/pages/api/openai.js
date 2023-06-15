@@ -18,11 +18,6 @@ export default async function handler(req, res) {
         { role: "user", content: `${req.query.content}` },
       ],
       temperature: 1.3,
-    },
-    {
-      proxy: false,
-      httpAgent: new HttpsProxyAgent("http://127.0.0.1:1087"),
-      httpsAgent: new HttpsProxyAgent("http://127.0.0.1:1087"),
     }
   );
 
