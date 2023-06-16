@@ -2,6 +2,7 @@ import { useState } from "react";
 
 const UploadForm = ({handleSetContent}) => {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isSet, setIsSet] = useState(false);
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -23,6 +24,7 @@ const UploadForm = ({handleSetContent}) => {
         if (response.ok) {
           const data = await response.json();
           handleSetContent(data.content)
+          setIsSet(true);
           // Handle the parsed data or perform further actions
         } else {
           console.error("Error uploading the file:", response.status);
@@ -34,10 +36,17 @@ const UploadForm = ({handleSetContent}) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="file"  onChange={handleFileChange} />
-      <button type="submit">Upload</button>
+    <div className="border rounded shadow p-2">
+    <form className=" flex flex-row w-[100%] justify-between" onSubmit={handleSubmit}>
+      <input type="file" onChange={handleFileChange} />
+      <button className="shadow px-1 border rounded ml-3" type="submit">Submit</button>
     </form>
+    {isSet ? (
+        <p>Your training data is set successfully ✅</p>
+      ) : (
+        <p>Training data not set 🥱</p>
+      )}
+    </div>
   );
 };
 

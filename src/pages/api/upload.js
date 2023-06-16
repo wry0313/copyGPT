@@ -7,9 +7,6 @@ export const config = {
   },
 };
 
-
-
-
 export default async function handler(req, res) {
 
   const form = new formidable.IncomingForm ();
@@ -22,7 +19,6 @@ export default async function handler(req, res) {
 
     res.status(200).json(content);
   });
-  
 }
 export function processDB(filepath, max_length=4000) {
   return new Promise((resolve, reject) => {
