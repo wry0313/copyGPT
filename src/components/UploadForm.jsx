@@ -44,7 +44,7 @@ const UploadForm = ({handleSetContent}) => {
     {isSet ? (
         <p>Your training data is set successfully ✅</p>
       ) : (
-        <p>Training data not set 🥱</p>
+        <p>No training data set 🥱</p>
       )}
     </div>
   );

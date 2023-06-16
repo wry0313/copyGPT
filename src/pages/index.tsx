@@ -10,13 +10,7 @@ import { v4 } from "uuid";
 import UploadForm from "@/components/UploadForm";
 
 firebase.initializeApp({
-  apiKey: "AIzaSyChLYmtSUbgD0aQs6LV2Wfl5zLxoI_vOSY",
-  authDomain: "chatroom-2921f.firebaseapp.com",
-  projectId: "chatroom-2921f",
-  storageBucket: "chatroom-2921f.appspot.com",
-  messagingSenderId: "814556940279",
-  appId: "1:814556940279:web:9aa024401096ed8847d0f2",
-  measurementId: "G-B7RCNTZE2K",
+  // your firebase config
 });
 
 // auth and firestore sdk as global variables for reference
@@ -46,7 +40,7 @@ function SignIn() {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithRedirect(provider);
   };
-  return <button onClick={signInWithGoogle}>Sign in with Google</button>;
+  return <button className="shadow px-1 border rounded" onClick={signInWithGoogle}>Sign in with Google🚀</button>;
 }
 
 function SignOut() {
@@ -55,7 +49,7 @@ function SignOut() {
 
 function Chatroom() {
   const messagesRef = firestore.collection("messages");
-  const query = messagesRef.orderBy("createdAt", "desc").limit(15);
+  const query = messagesRef.orderBy("createdAt", "desc").limit(20);
   const [messages] = useCollectionData<Message>(query as any);
 
   const [prompt, setPrompt] = useState("");
