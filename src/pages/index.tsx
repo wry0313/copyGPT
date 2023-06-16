@@ -7,6 +7,7 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 
 import { useState, useRef, useEffect } from "react";
 import { v4 } from "uuid";
+import UploadForm from "@/components/UploadForm"
 
 firebase.initializeApp({
   apiKey: "AIzaSyChLYmtSUbgD0aQs6LV2Wfl5zLxoI_vOSY",
@@ -54,11 +55,19 @@ function SignOut() {
 
 function Chatroom() {
   const messagesRef = firestore.collection("messages");
-  const query = messagesRef.orderBy("createdAt", "desc").limit(10);
+  const query = messagesRef.orderBy("createdAt", "desc").limit(100);
   const [messages] = useCollectionData<Message>(query as any);
 
-  const [loading, setLoading] = useState(false);
-
+  const [prompt, setPrompt] = useState("");
+  const [isSet, setIsSet] = useState(false)
+  const [displayText, setDispalyText] = useState("")
+  const handleSetContent = (content : string) => {
+    console.log(content)
+    if (content) {
+      setPrompt(content)
+      setIsSet(true)
+    }
+  }
   // use this query and listen to any updates the date in real time with the use collection data hook it returns an array of objects where each object is the chat message and the database. everytime the chat changes, react will rerender the messages
 
   const [formValue, setFormValue] = useState("");
@@ -71,27 +80,29 @@ function Chatroom() {
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault(); // normally when a form is submitted it will refresh the page but we can prevent that from happening
 
+    if (!prompt) {
+      setDispalyText("you must submit your imessage chat.db file and click upload")
+      return
+    }
     if (!formValue) {
       return;
     }
     const { uid, photoURL } = auth.currentUser || {};
-    const content = formValue;
+    const userInput = formValue;
     setFormValue("");
 
     messagesRef.add({
-      text: content,
+      text: userInput,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       uid,
       photoURL,
       id: v4(),
     });
 
-    setLoading(true);
+    setDispalyText("bot is typing...")
 
-    const res = await fetch(`/api/openai?content=${content}`);
+    const res = await fetch(`/api/openai?input=${userInput}&prompt=${prompt}`);
     const data = await res.json();
-
-    console.log(data.choices[0].message.content);
 
     messagesRef.add({
       text: data.choices[0].message.content,
@@ -101,11 +112,13 @@ function Chatroom() {
       id: v4(),
     });
 
-    setLoading(false);
+    setDispalyText("")
   };
   return (
     <div id="chatroom">
-      <div className="overflow-auto h-[80vh] no-scrollbar">
+      <UploadForm handleSetContent={handleSetContent}></UploadForm>
+      {isSet ? <p>Your training data is set successfully</p> : <p>Training data not set</p>}
+      <div className="overflow-auto h-[70vh] no-scrollbar">
         {messages &&
           messages
             .map((msg) => <ChatMessage key={msg.id} message={msg} />)
@@ -113,7 +126,7 @@ function Chatroom() {
         <div ref={dummy} className=""></div>
       </div>
       <form onSubmit={sendMessage} className=" mb-3">
-        {loading && <div>bot1 is typing...</div>}
+        <div>{displayText}</div>
         <input
           className="px-2 min-h-[3rem] w-[100%] rounded border-[1px]"
           value={formValue}

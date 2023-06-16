@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 
 function processDB() {
   return new Promise((resolve, reject) => {
-    const db = new sqlite3.Database("./database/chat.db", sqlite3.OPEN_READWRITE, (err) => {
+    const db = new sqlite3.Database("./public/chat.db", sqlite3.OPEN_READWRITE, (err) => {
       if (err) {
         console.error(err);
         reject(err);
